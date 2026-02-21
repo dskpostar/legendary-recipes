@@ -10,9 +10,9 @@ const ADMIN_LINKS = [
 ];
 
 export function AdminPage() {
-  const { isAdmin, isLoading } = useAuth();
+  const { isAdmin, isAuthReady } = useAuth();
 
-  if (isLoading) return null;
+  if (!isAuthReady) return <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center text-white/40 text-sm">Loading...</div>;
   if (!isAdmin) return <Navigate to="/" replace />;
 
   return (

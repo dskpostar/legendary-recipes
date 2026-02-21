@@ -5,6 +5,7 @@ import { supabase, isSupabaseConfigured } from './supabase';
 interface AuthContextValue {
   user: User | null;
   isAdmin: boolean;
+  isAuthReady: boolean;
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, displayName: string) => Promise<void>;
@@ -41,11 +42,12 @@ async function fetchProfile(userId: string): Promise<ProfileData> {
 export function AuthProviderComponent({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isAuthReady, setIsAuthReady] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (!isSupabaseConfigured || !supabase) {
-      setIsLoading(false);
+      setIsAuthReady(true);
       return;
     }
 
@@ -56,16 +58,14 @@ export function AuthProviderComponent({ children }: { children: ReactNode }) {
         setUser(profile);
         setIsAdmin(admin);
       }
-      setIsLoading(false);
+      setIsAuthReady(true);
+    }).catch(() => {
+      setIsAuthReady(true);
     });
 
-    // Subscribe to auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (session?.user) {
-        const { profile, isAdmin: admin } = await fetchProfile(session.user.id);
-        setUser(profile);
-        setIsAdmin(admin);
-      } else {
+    // Only handle sign-out via onAuthStateChange
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) {
         setUser(null);
         setIsAdmin(false);
       }
@@ -78,8 +78,13 @@ export function AuthProviderComponent({ children }: { children: ReactNode }) {
     if (!supabase) throw new Error('Supabase is not configured');
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw new Error(error.message);
+      if (data.user) {
+        const { profile, isAdmin: admin } = await fetchProfile(data.user.id);
+        setUser(profile);
+        setIsAdmin(admin);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -113,7 +118,7 @@ export function AuthProviderComponent({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, isAdmin, isLoading, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ user, isAdmin, isAuthReady, isLoading, signIn, signUp, signOut }}>
       {children}
     </AuthContext.Provider>
   );
