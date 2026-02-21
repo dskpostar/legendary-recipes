@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { Chef, Recipe, RecipeComponent, Ingredient, Collection, CollectionRecipe, UserLike, Comment } from './types';
 import { SEED_CHEFS, SEED_RECIPES, SEED_COMPONENTS, SEED_INGREDIENTS, SEED_COLLECTIONS, SEED_COLLECTION_RECIPES } from './seed-data';
+import { supabase, isSupabaseConfigured } from './supabase';
 
 export interface LocalCollection<T> {
   items: T[];
@@ -10,29 +11,40 @@ export interface LocalCollection<T> {
   removeItem: (id: string) => void;
 }
 
-function useLocalCollection<T>(key: string, seedData: T[]): LocalCollection<T> {
-  const [items, setItems] = useState<T[]>(() => {
-    const stored = localStorage.getItem(key);
-    if (stored) {
-      try { return JSON.parse(stored); } catch { /* ignore */ }
-    }
-    localStorage.setItem(key, JSON.stringify(seedData));
-    return seedData;
-  });
+// Map from hook name to Supabase table name
+const TABLE_NAMES: Record<string, string> = {
+  lr_chefs: 'chefs',
+  lr_recipes: 'recipes',
+  lr_components: 'recipe_components',
+  lr_ingredients: 'ingredients',
+  lr_collections: 'collections',
+  lr_collection_recipes: 'collection_recipes',
+  lr_likes: 'user_likes',
+  lr_comments: 'comments',
+};
+
+function useSupabaseTable<T extends { id: string }>(key: string, seedData: T[]): LocalCollection<T> {
+  const [items, setItems] = useState<T[]>(seedData);
 
   useEffect(() => {
-    localStorage.setItem(key, JSON.stringify(items));
-  }, [key, items]);
+    if (!isSupabaseConfigured || !supabase) return;
 
-  // Ensure seed data is loaded if storage is empty
-  useEffect(() => {
-    if (items.length === 0 && seedData.length > 0) {
-      setItems(seedData);
-    }
-  }, [items.length, seedData]);
+    const tableName = TABLE_NAMES[key];
+    if (!tableName) return;
+
+    supabase
+      .from(tableName)
+      .select('*')
+      .then(({ data, error }) => {
+        if (!error && data && data.length > 0) {
+          setItems(data as T[]);
+        }
+        // On error or empty result, keep seedData already set as initial state
+      });
+  }, [key]);
 
   const getById = useCallback(
-    (id: string) => items.find((item) => (item as Record<string, unknown>).id === id),
+    (id: string) => items.find((item) => item.id === id),
     [items]
   );
 
@@ -42,46 +54,80 @@ function useLocalCollection<T>(key: string, seedData: T[]): LocalCollection<T> {
   );
 
   const addItem = useCallback(
-    (item: T) => setItems((prev) => [...prev, item]),
-    []
+    (item: T) => {
+      setItems((prev) => [...prev, item]);
+
+      if (isSupabaseConfigured && supabase) {
+        const tableName = TABLE_NAMES[key];
+        if (tableName) {
+          supabase
+            .from(tableName)
+            .insert(item)
+            .then(({ error }) => {
+              if (error) {
+                console.error(`Failed to insert into ${tableName}:`, error.message);
+                setItems((prev) => prev.filter((i) => i.id !== item.id));
+              }
+            });
+        }
+      }
+    },
+    [key]
   );
 
   const removeItem = useCallback(
-    (id: string) => setItems((prev) => prev.filter((item) => (item as Record<string, unknown>).id !== id)),
-    []
+    (id: string) => {
+      setItems((prev) => prev.filter((item) => item.id !== id));
+
+      if (isSupabaseConfigured && supabase) {
+        const tableName = TABLE_NAMES[key];
+        if (tableName) {
+          supabase
+            .from(tableName)
+            .delete()
+            .eq('id', id)
+            .then(({ error }) => {
+              if (error) {
+                console.error(`Failed to delete from ${tableName}:`, error.message);
+              }
+            });
+        }
+      }
+    },
+    [key]
   );
 
   return { items, getById, getByField, addItem, removeItem };
 }
 
 export function useChefs() {
-  return useLocalCollection<Chef>('lr_chefs', SEED_CHEFS);
+  return useSupabaseTable<Chef>('lr_chefs', SEED_CHEFS);
 }
 
 export function useRecipes() {
-  return useLocalCollection<Recipe>('lr_recipes', SEED_RECIPES);
+  return useSupabaseTable<Recipe>('lr_recipes', SEED_RECIPES);
 }
 
 export function useComponents() {
-  return useLocalCollection<RecipeComponent>('lr_components', SEED_COMPONENTS);
+  return useSupabaseTable<RecipeComponent>('lr_components', SEED_COMPONENTS);
 }
 
 export function useIngredients() {
-  return useLocalCollection<Ingredient>('lr_ingredients', SEED_INGREDIENTS);
+  return useSupabaseTable<Ingredient>('lr_ingredients', SEED_INGREDIENTS);
 }
 
 export function useCollections() {
-  return useLocalCollection<Collection>('lr_collections', SEED_COLLECTIONS);
+  return useSupabaseTable<Collection>('lr_collections', SEED_COLLECTIONS);
 }
 
 export function useCollectionRecipes() {
-  return useLocalCollection<CollectionRecipe>('lr_collection_recipes', SEED_COLLECTION_RECIPES);
+  return useSupabaseTable<CollectionRecipe>('lr_collection_recipes', SEED_COLLECTION_RECIPES);
 }
 
 export function useLikes() {
-  return useLocalCollection<UserLike>('lr_likes', []);
+  return useSupabaseTable<UserLike>('lr_likes', []);
 }
 
 export function useComments() {
-  return useLocalCollection<Comment>('lr_comments', []);
+  return useSupabaseTable<Comment>('lr_comments', []);
 }
