@@ -9,6 +9,7 @@ export interface LocalCollection<T> {
   getByField: (field: keyof T, value: unknown) => T[];
   addItem: (item: T) => void;
   removeItem: (id: string) => void;
+  updateItem: (id: string, updates: Partial<T>) => void;
 }
 
 // Map from hook name to Supabase table name
@@ -97,7 +98,29 @@ function useSupabaseTable<T extends { id: string }>(key: string, seedData: T[]):
     [key]
   );
 
-  return { items, getById, getByField, addItem, removeItem };
+  const updateItem = useCallback(
+    (id: string, updates: Partial<T>) => {
+      setItems((prev) => prev.map((item) => (item.id === id ? { ...item, ...updates } : item)));
+
+      if (isSupabaseConfigured && supabase) {
+        const tableName = TABLE_NAMES[key];
+        if (tableName) {
+          supabase
+            .from(tableName)
+            .update(updates)
+            .eq('id', id)
+            .then(({ error }) => {
+              if (error) {
+                console.error(`Failed to update ${tableName}:`, error.message);
+              }
+            });
+        }
+      }
+    },
+    [key]
+  );
+
+  return { items, getById, getByField, addItem, removeItem, updateItem };
 }
 
 export function useChefs() {
