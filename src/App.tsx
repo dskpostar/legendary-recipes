@@ -1,4 +1,11 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+  return null;
+}
 import { AuthProviderComponent } from './lib/auth-context';
 import { AppProvider } from './lib/context';
 import { AppShell } from './components/layout/AppShell';
@@ -19,6 +26,7 @@ import { UsersAdmin } from './pages/admin/UsersAdmin';
 export default function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <AuthProviderComponent>
         <AppProvider>
           <Routes>
