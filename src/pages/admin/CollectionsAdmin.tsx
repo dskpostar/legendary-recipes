@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useApp } from '../../lib/context';
 import type { Collection } from '../../lib/types';
+import { ImageUpload } from '../../components/ui/ImageUpload';
 
 const SELECT_CLS = 'w-full bg-[#1a1a1a] border border-white/20 rounded px-3 py-2 text-white text-sm';
 const INPUT_CLS = 'w-full bg-white/10 border border-white/20 rounded px-3 py-2 text-white text-sm';
@@ -110,8 +111,8 @@ export function CollectionsAdmin() {
               <textarea className={`${INPUT_CLS} h-20 resize-none`} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
             </div>
             <div className="col-span-2">
-              <label className="block text-xs text-white/50 mb-1">Cover Image URL</label>
-              <input className={INPUT_CLS} value={form.cover_image_url} onChange={(e) => setForm({ ...form, cover_image_url: e.target.value })} />
+              <label className="block text-xs text-white/50 mb-1">Cover Image</label>
+              <ImageUpload value={form.cover_image_url} onChange={(url) => setForm({ ...form, cover_image_url: url })} />
             </div>
             <div>
               <label className="block text-xs text-white/50 mb-1">Sort Order</label>

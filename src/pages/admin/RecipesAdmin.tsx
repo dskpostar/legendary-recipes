@@ -56,6 +56,9 @@ export function RecipesAdmin() {
   const [addingIngForComp, setAddingIngForComp] = useState<string | null>(null);
   const [ingForm, setIngForm] = useState<Omit<Ingredient, 'id'>>(EMPTY_INGREDIENT);
 
+  const [editingIng, setEditingIng] = useState<Ingredient | null>(null);
+  const [ingEditForm, setIngEditForm] = useState<Omit<Ingredient, 'id'>>(EMPTY_INGREDIENT);
+
   const activeRecipeId = editing?.id ?? null;
   const recipeComponents = activeRecipeId
     ? components.items.filter((c) => c.recipe_id === activeRecipeId).sort((a, b) => a.sort_order - b.sort_order)
@@ -111,7 +114,10 @@ export function RecipesAdmin() {
   // Component handlers
   function openAddComp() {
     if (!activeRecipeId) return;
-    setCompForm({ ...EMPTY_COMPONENT, recipe_id: activeRecipeId });
+    const maxSort = recipeComponents.length > 0
+      ? Math.max(...recipeComponents.map((c) => c.sort_order)) + 1
+      : 0;
+    setCompForm({ ...EMPTY_COMPONENT, recipe_id: activeRecipeId, sort_order: maxSort });
     setIsAddingComp(true);
     setEditingComp(null);
   }
@@ -147,12 +153,26 @@ export function RecipesAdmin() {
   function openAddIng(componentId: string) {
     setIngForm({ ...EMPTY_INGREDIENT, component_id: componentId });
     setAddingIngForComp(componentId);
+    setEditingIng(null);
   }
 
   function handleIngSubmit(e: React.FormEvent) {
     e.preventDefault();
     ingredients.addItem({ id: crypto.randomUUID(), ...ingForm });
     setAddingIngForComp(null);
+  }
+
+  function openEditIng(ing: Ingredient) {
+    setEditingIng(ing);
+    setIngEditForm({ ...ing });
+    setAddingIngForComp(null);
+  }
+
+  function handleIngEditSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!editingIng) return;
+    ingredients.updateItem(editingIng.id, ingEditForm);
+    setEditingIng(null);
   }
 
   function handleDeleteIng(id: string) {
@@ -347,9 +367,32 @@ export function RecipesAdmin() {
 
                           <div className="space-y-1">
                             {compIngredients.map((ing) => (
-                              <div key={ing.id} className="flex items-center justify-between text-sm text-white/60">
-                                <span>{ing.name} — {ing.quantity} {ing.unit}</span>
-                                <button onClick={() => handleDeleteIng(ing.id)} className="text-red-400/50 hover:text-red-400 text-xs ml-3">Delete</button>
+                              <div key={ing.id}>
+                                {editingIng?.id === ing.id ? (
+                                  <form onSubmit={handleIngEditSubmit} className="mb-2 grid grid-cols-4 gap-2">
+                                    <div className="col-span-2">
+                                      <input placeholder="Name *" className={INPUT_CLS} value={ingEditForm.name} onChange={(e) => setIngEditForm({ ...ingEditForm, name: e.target.value })} required />
+                                    </div>
+                                    <div>
+                                      <input placeholder="Qty" type="number" className={INPUT_CLS} value={ingEditForm.quantity} onChange={(e) => setIngEditForm({ ...ingEditForm, quantity: Number(e.target.value) })} />
+                                    </div>
+                                    <div>
+                                      <input placeholder="Unit" className={INPUT_CLS} value={ingEditForm.unit} onChange={(e) => setIngEditForm({ ...ingEditForm, unit: e.target.value })} />
+                                    </div>
+                                    <div className="col-span-4 flex gap-2">
+                                      <button type="submit" className="px-3 py-1 bg-white text-black text-xs rounded">Save</button>
+                                      <button type="button" onClick={() => setEditingIng(null)} className="text-white/40 text-xs hover:text-white">Cancel</button>
+                                    </div>
+                                  </form>
+                                ) : (
+                                  <div className="flex items-center justify-between text-sm text-white/60">
+                                    <span>{ing.name} — {ing.quantity} {ing.unit}</span>
+                                    <div className="flex gap-2 ml-3 shrink-0">
+                                      <button onClick={() => openEditIng(ing)} className="text-white/40 hover:text-white text-xs">Edit</button>
+                                      <button onClick={() => handleDeleteIng(ing.id)} className="text-red-400/50 hover:text-red-400 text-xs">Delete</button>
+                                    </div>
+                                  </div>
+                                )}
                               </div>
                             ))}
                           </div>

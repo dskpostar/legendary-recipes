@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useApp } from '../../lib/context';
 import type { Chef } from '../../lib/types';
+import { ImageUpload } from '../../components/ui/ImageUpload';
 
 const SELECT_CLS = 'w-full bg-[#1a1a1a] border border-white/20 rounded px-3 py-2 text-white text-sm';
 
@@ -129,12 +130,8 @@ export function ChefsAdmin() {
               />
             </div>
             <div className="col-span-2">
-              <label className="block text-xs text-white/50 mb-1">Avatar URL</label>
-              <input
-                className="w-full bg-white/10 border border-white/20 rounded px-3 py-2 text-white text-sm"
-                value={form.avatar_url}
-                onChange={(e) => setForm({ ...form, avatar_url: e.target.value })}
-              />
+              <label className="block text-xs text-white/50 mb-1">Avatar</label>
+              <ImageUpload value={form.avatar_url} onChange={(url) => setForm({ ...form, avatar_url: url })} />
             </div>
             <div className="col-span-2">
               <label className="block text-xs text-white/50 mb-1">Bio</label>
