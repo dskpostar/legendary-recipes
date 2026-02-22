@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useApp } from '../../lib/context';
 import type { Chef } from '../../lib/types';
 
+const SELECT_CLS = 'w-full bg-[#1a1a1a] border border-white/20 rounded px-3 py-2 text-white text-sm';
+
 const EMPTY_CHEF: Omit<Chef, 'id'> = {
   email: '',
   display_name: '',
@@ -108,7 +110,7 @@ export function ChefsAdmin() {
             <div>
               <label className="block text-xs text-white/50 mb-1">Membership Plan</label>
               <select
-                className="w-full bg-white/10 border border-white/20 rounded px-3 py-2 text-white text-sm"
+                className={SELECT_CLS}
                 value={form.membership_plan}
                 onChange={(e) => setForm({ ...form, membership_plan: e.target.value as Chef['membership_plan'] })}
               >
