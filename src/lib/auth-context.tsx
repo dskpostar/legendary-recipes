@@ -10,6 +10,7 @@ interface AuthContextValue {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, displayName: string) => Promise<void>;
   signOut: () => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -19,23 +20,50 @@ interface ProfileData {
   isAdmin: boolean;
 }
 
-async function fetchProfile(userId: string): Promise<ProfileData> {
+async function fetchOrCreateProfile(supabaseUser: { id: string; email?: string; user_metadata: Record<string, unknown> }): Promise<ProfileData> {
   if (!supabase) return { profile: null, isAdmin: false };
   const { data } = await supabase
     .from('profiles')
     .select('*')
-    .eq('id', userId)
+    .eq('id', supabaseUser.id)
     .single();
-  if (!data) return { profile: null, isAdmin: false };
+
+  if (data) {
+    return {
+      profile: {
+        id: data.id,
+        email: data.email,
+        display_name: data.display_name,
+        avatar_url: data.avatar_url ?? '',
+        created_at: data.created_at,
+      },
+      isAdmin: data.is_admin === true,
+    };
+  }
+
+  // First-time OAuth user: create profile from provider metadata
+  const email = supabaseUser.email ?? '';
+  const meta = supabaseUser.user_metadata;
+  const displayName = String(meta.full_name ?? meta.name ?? email.split('@')[0]);
+  const avatarUrl = String(meta.avatar_url ?? meta.picture ?? '');
+
+  const { data: newProfile } = await supabase
+    .from('profiles')
+    .insert({ id: supabaseUser.id, email, display_name: displayName, avatar_url: avatarUrl })
+    .select()
+    .single();
+
+  if (!newProfile) return { profile: null, isAdmin: false };
+
   return {
     profile: {
-      id: data.id,
-      email: data.email,
-      display_name: data.display_name,
-      avatar_url: data.avatar_url ?? '',
-      created_at: data.created_at,
+      id: newProfile.id,
+      email: newProfile.email,
+      display_name: newProfile.display_name,
+      avatar_url: newProfile.avatar_url ?? '',
+      created_at: newProfile.created_at,
     },
-    isAdmin: data.is_admin === true,
+    isAdmin: false,
   };
 }
 
@@ -51,24 +79,17 @@ export function AuthProviderComponent({ children }: { children: ReactNode }) {
       return;
     }
 
-    // Restore session on mount
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    // onAuthStateChange handles all auth events including OAuth callbacks
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session?.user) {
-        const { profile, isAdmin: admin } = await fetchProfile(session.user.id);
+        const { profile, isAdmin: admin } = await fetchOrCreateProfile(session.user);
         setUser(profile);
         setIsAdmin(admin);
-      }
-      setIsAuthReady(true);
-    }).catch(() => {
-      setIsAuthReady(true);
-    });
-
-    // Only handle sign-out via onAuthStateChange
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) {
+      } else {
         setUser(null);
         setIsAdmin(false);
       }
+      setIsAuthReady(true);
     });
 
     return () => subscription.unsubscribe();
@@ -80,8 +101,9 @@ export function AuthProviderComponent({ children }: { children: ReactNode }) {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw new Error(error.message);
+      // Explicitly fetch profile for fast UI update (onAuthStateChange also fires)
       if (data.user) {
-        const { profile, isAdmin: admin } = await fetchProfile(data.user.id);
+        const { profile, isAdmin: admin } = await fetchOrCreateProfile(data.user);
         setUser(profile);
         setIsAdmin(admin);
       }
@@ -112,13 +134,22 @@ export function AuthProviderComponent({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const signInWithGoogle = useCallback(async () => {
+    if (!supabase) throw new Error('Supabase is not configured');
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.origin },
+    });
+    if (error) throw new Error(error.message);
+  }, []);
+
   const signOut = useCallback(async () => {
     if (!supabase) return;
     await supabase.auth.signOut();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, isAdmin, isAuthReady, isLoading, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ user, isAdmin, isAuthReady, isLoading, signIn, signUp, signOut, signInWithGoogle }}>
       {children}
     </AuthContext.Provider>
   );
