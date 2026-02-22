@@ -41,7 +41,7 @@ export function BrowsePage() {
             <div className="flex flex-wrap gap-2">
               <Tag active={cuisine === null} onClick={() => setCuisine(null)}>All</Tag>
               {(Object.keys(CUISINE_LABELS) as CuisineType[]).map((c) => (
-                <Tag key={c} active={cuisine === c} onClick={() => setCuisine(c)}>
+                <Tag key={c} active={cuisine === c} onClick={() => setCuisine(cuisine === c ? null : c)}>
                   {CUISINE_LABELS[c]}
                 </Tag>
               ))}
@@ -54,7 +54,7 @@ export function BrowsePage() {
             <div className="flex flex-wrap gap-2">
               <Tag active={season === null} onClick={() => setSeason(null)}>All</Tag>
               {(Object.keys(SEASON_LABELS) as SeasonTag[]).map((s) => (
-                <Tag key={s} active={season === s} onClick={() => setSeason(s)}>
+                <Tag key={s} active={season === s} onClick={() => setSeason(season === s ? null : s)}>
                   {SEASON_LABELS[s]}
                 </Tag>
               ))}
@@ -67,7 +67,7 @@ export function BrowsePage() {
             <div className="flex flex-wrap gap-2">
               <Tag active={tier === null} onClick={() => setTier(null)}>All</Tag>
               {(Object.keys(TIER_LABELS) as RecipeTier[]).map((t) => (
-                <Tag key={t} active={tier === t} onClick={() => setTier(t)}>
+                <Tag key={t} active={tier === t} onClick={() => setTier(tier === t ? null : t)}>
                   {TIER_LABELS[t]}
                 </Tag>
               ))}
@@ -78,7 +78,11 @@ export function BrowsePage() {
         {/* Results */}
         <div>
           <p className="text-sm text-cream/40 mb-4">{filtered.length} recipes</p>
-          <RecipeGrid recipes={filtered} />
+          {filtered.length === 0 ? (
+            <p className="text-cream/40 text-sm py-8 text-center">No recipes found matching your filters.</p>
+          ) : (
+            <RecipeGrid recipes={filtered} />
+          )}
         </div>
       </div>
     </div>

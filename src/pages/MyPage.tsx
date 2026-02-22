@@ -4,9 +4,10 @@ import { RecipeGrid } from '../components/recipe/RecipeGrid';
 import { Navigate } from 'react-router-dom';
 
 export function MyPage() {
-  const { user } = useAuth();
+  const { user, isAuthReady } = useAuth();
   const { likes, comments, recipes } = useApp();
 
+  if (!isAuthReady) return null;
   if (!user) return <Navigate to="/" replace />;
 
   const likedRecipeIds = likes.items

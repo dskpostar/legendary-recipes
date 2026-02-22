@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../lib/auth-context';
 import { useApp } from '../../lib/context';
 import { CommentItem } from './CommentItem';
 import { LoginModal } from '../auth/LoginModal';
 import { Button } from '../ui/Button';
+import { supabase, isSupabaseConfigured } from '../../lib/supabase';
+import type { User } from '../../lib/types';
 
 interface CommentSectionProps {
   recipeId: string;
@@ -14,13 +16,30 @@ export function CommentSection({ recipeId }: CommentSectionProps) {
   const { comments } = useApp();
   const [content, setContent] = useState('');
   const [showLogin, setShowLogin] = useState(false);
+  const [profilesMap, setProfilesMap] = useState<Record<string, User>>({});
 
   const recipeComments = comments.items
     .filter((c) => c.recipe_id === recipeId)
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
-  // Build a map of users from localStorage for display
-  const usersMap = getUsersMap();
+  useEffect(() => {
+    if (!isSupabaseConfigured || !supabase || recipeComments.length === 0) return;
+    const userIds = [...new Set(recipeComments.map((c) => c.user_id))];
+    supabase
+      .from('profiles')
+      .select('*')
+      .in('id', userIds)
+      .then(({ data }) => {
+        if (!data) return;
+        const map: Record<string, User> = {};
+        for (const p of data) {
+          map[p.id] = { id: p.id, email: p.email, display_name: p.display_name, avatar_url: p.avatar_url ?? '', created_at: p.created_at };
+        }
+        setProfilesMap(map);
+      });
+  }, [recipeComments.length]);
+
+  const usersMap = profilesMap;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,15 +123,3 @@ export function CommentSection({ recipeId }: CommentSectionProps) {
   );
 }
 
-function getUsersMap(): Record<string, { id: string; display_name: string; avatar_url: string; email: string; created_at: string }> {
-  try {
-    const users = JSON.parse(localStorage.getItem('lr_users') || '[]');
-    const map: Record<string, { id: string; display_name: string; avatar_url: string; email: string; created_at: string }> = {};
-    for (const u of users) {
-      map[u.id] = { id: u.id, display_name: u.display_name, avatar_url: u.avatar_url, email: u.email, created_at: u.created_at };
-    }
-    return map;
-  } catch {
-    return {};
-  }
-}
