@@ -1,6 +1,34 @@
-# React + TypeScript + Vite
+# Legendary Recipes
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+World-class recipes for professional chefs. Built with React + TypeScript + Vite + Supabase.
+
+## Production
+
+**URL:** https://main.d35cr2rjzi2pmy.amplifyapp.com/
+
+Hosted on AWS Amplify. Deploys automatically when `main` branch is updated on GitHub.
+
+```bash
+# Deploy
+git push origin master:main
+```
+
+## Local Development
+
+```bash
+npm install
+npm run dev
+```
+
+## Tech Stack
+
+- React 19 + TypeScript
+- Vite
+- Tailwind CSS v4
+- Supabase (Auth + Database)
+- AWS Amplify (Hosting)
+
+---
 
 Currently, two official plugins are available:
 
