@@ -3,6 +3,7 @@ import type { Recipe, Chef } from '../../lib/types';
 import { cuisineLabel, formatTime } from '../../lib/format';
 import { RecipeBadge } from './RecipeBadge';
 import { LikeButton } from './LikeButton';
+import { useApp } from '../../lib/context';
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -10,6 +11,8 @@ interface RecipeCardProps {
 }
 
 export function RecipeCard({ recipe, chef }: RecipeCardProps) {
+  const { comments } = useApp();
+  const commentCount = comments.items.filter((c) => c.recipe_id === recipe.id).length;
   return (
     <Link
       to={`/recipe/${recipe.id}`}
@@ -51,7 +54,7 @@ export function RecipeCard({ recipe, chef }: RecipeCardProps) {
 
         <div className="mt-3 flex items-center gap-3 text-xs text-cream/30">
           <LikeButton recipeId={recipe.id} size="sm" />
-          <span>&#128172; {recipe.comments_count}</span>
+          <span>&#128172; {commentCount}</span>
         </div>
       </div>
     </Link>
