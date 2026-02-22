@@ -1,11 +1,15 @@
 import { Link } from 'react-router-dom';
 import type { Chef } from '../../lib/types';
+import { useApp } from '../../lib/context';
 
 interface ChefCardProps {
   chef: Chef;
 }
 
 export function ChefCard({ chef }: ChefCardProps) {
+  const { chefFollows } = useApp();
+  const followerCount = chefFollows.items.filter((f) => f.chef_id === chef.id).length;
+
   return (
     <Link
       to={`/chef/${chef.id}`}
@@ -23,7 +27,7 @@ export function ChefCard({ chef }: ChefCardProps) {
         </div>
         <div className="text-sm text-cream/40 truncate">{chef.restaurant} &middot; {chef.country}</div>
       </div>
-      <div className="text-xs text-cream/30">{chef.follower_count.toLocaleString()} followers</div>
+      <div className="text-xs text-cream/30">{followerCount.toLocaleString()} followers</div>
     </Link>
   );
 }

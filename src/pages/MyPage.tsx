@@ -1,11 +1,12 @@
 import { useAuth } from '../lib/auth-context';
 import { useApp } from '../lib/context';
 import { RecipeGrid } from '../components/recipe/RecipeGrid';
+import { ChefCard } from '../components/chef/ChefCard';
 import { Navigate } from 'react-router-dom';
 
 export function MyPage() {
   const { user, isAuthReady } = useAuth();
-  const { likes, comments, recipes } = useApp();
+  const { likes, comments, recipes, chefFollows, chefs } = useApp();
 
   if (!isAuthReady) return null;
   if (!user) return <Navigate to="/" replace />;
@@ -18,6 +19,11 @@ export function MyPage() {
   const userComments = comments.items
     .filter((c) => c.user_id === user.id)
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+  const followedChefIds = chefFollows.items
+    .filter((f) => f.user_id === user.id)
+    .map((f) => f.chef_id);
+  const followedChefs = chefs.items.filter((c) => followedChefIds.includes(c.id));
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -46,6 +52,22 @@ export function MyPage() {
           <RecipeGrid recipes={likedRecipes} />
         ) : (
           <p className="text-cream/40 text-sm">No liked recipes yet. Browse recipes and tap the heart!</p>
+        )}
+      </section>
+
+      {/* Following chefs */}
+      <section className="mb-12">
+        <h2 className="font-display text-2xl font-bold text-cream mb-6">
+          Following Chefs ({followedChefs.length})
+        </h2>
+        {followedChefs.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {followedChefs.map((chef) => (
+              <ChefCard key={chef.id} chef={chef} />
+            ))}
+          </div>
+        ) : (
+          <p className="text-cream/40 text-sm">No followed chefs yet. Visit a chef's profile and follow them!</p>
         )}
       </section>
 

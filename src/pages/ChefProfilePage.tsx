@@ -1,16 +1,18 @@
 import { useParams } from 'react-router-dom';
 import { useApp } from '../lib/context';
 import { RecipeGrid } from '../components/recipe/RecipeGrid';
+import { FollowButton } from '../components/recipe/FollowButton';
 import { NotFoundPage } from './NotFoundPage';
 
 export function ChefProfilePage() {
   const { id } = useParams<{ id: string }>();
-  const { chefs, recipes } = useApp();
+  const { chefs, recipes, chefFollows } = useApp();
 
   const chef = chefs.getById(id!);
   if (!chef) return <NotFoundPage />;
 
   const chefRecipes = recipes.items.filter((r) => r.chef_id === chef.id && r.is_published);
+  const followerCount = chefFollows.items.filter((f) => f.chef_id === chef.id).length;
 
   return (
     <div>
@@ -24,16 +26,19 @@ export function ChefProfilePage() {
               className="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover border-4 border-gold/20"
             />
             <div className="flex-1">
-              <h1 className="font-display text-3xl sm:text-4xl font-bold text-cream">
-                {chef.display_name}
-                {chef.is_verified && <span className="text-gold ml-2">&#10003;</span>}
-              </h1>
+              <div className="flex flex-wrap items-center gap-4">
+                <h1 className="font-display text-3xl sm:text-4xl font-bold text-cream">
+                  {chef.display_name}
+                  {chef.is_verified && <span className="text-gold ml-2">&#10003;</span>}
+                </h1>
+                <FollowButton chefId={chef.id} />
+              </div>
               <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-cream/50">
                 <span>{chef.restaurant}</span>
                 <span>&middot;</span>
                 <span>{chef.country}</span>
                 <span>&middot;</span>
-                <span>{chef.follower_count.toLocaleString()} followers</span>
+                <span>{followerCount.toLocaleString()} followers</span>
               </div>
               <p className="mt-4 text-cream/60 max-w-xl leading-relaxed">{chef.bio}</p>
             </div>

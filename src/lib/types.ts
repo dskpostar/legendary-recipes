@@ -90,6 +90,13 @@ export interface Comment {
   created_at: string;
 }
 
+export interface ChefFollow {
+  id: string;
+  user_id: string;
+  chef_id: string;
+  created_at: string;
+}
+
 // ===== Enums & Constants =====
 
 export type RecipeTier = 'base' | 'featured' | 'top' | 'bocuse_collection' | 'legendary';

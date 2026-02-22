@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { Chef, Recipe, RecipeComponent, Ingredient, Collection, CollectionRecipe, UserLike, Comment } from './types';
+import type { Chef, Recipe, RecipeComponent, Ingredient, Collection, CollectionRecipe, UserLike, Comment, ChefFollow } from './types';
 import { SEED_CHEFS, SEED_RECIPES, SEED_COMPONENTS, SEED_INGREDIENTS, SEED_COLLECTIONS, SEED_COLLECTION_RECIPES } from './seed-data';
 import { supabase, isSupabaseConfigured } from './supabase';
 
@@ -22,6 +22,7 @@ const TABLE_NAMES: Record<string, string> = {
   lr_collection_recipes: 'collection_recipes',
   lr_likes: 'user_likes',
   lr_comments: 'comments',
+  lr_follows: 'chef_follows',
 };
 
 function useSupabaseTable<T extends { id: string }>(key: string, seedData: T[]): LocalCollection<T> {
@@ -153,4 +154,8 @@ export function useLikes() {
 
 export function useComments() {
   return useSupabaseTable<Comment>('lr_comments', []);
+}
+
+export function useChefFollows() {
+  return useSupabaseTable<ChefFollow>('lr_follows', []);
 }

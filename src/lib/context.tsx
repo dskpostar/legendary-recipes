@@ -1,7 +1,7 @@
 import { createContext, useContext, type ReactNode } from 'react';
-import type { Chef, Recipe, RecipeComponent, Ingredient, Collection, CollectionRecipe, UserLike, Comment } from './types';
+import type { Chef, Recipe, RecipeComponent, Ingredient, Collection, CollectionRecipe, UserLike, Comment, ChefFollow } from './types';
 import type { LocalCollection } from './store';
-import { useChefs, useRecipes, useComponents, useIngredients, useCollections, useCollectionRecipes, useLikes, useComments } from './store';
+import { useChefs, useRecipes, useComponents, useIngredients, useCollections, useCollectionRecipes, useLikes, useComments, useChefFollows } from './store';
 
 interface AppContextValue {
   chefs: LocalCollection<Chef>;
@@ -12,6 +12,7 @@ interface AppContextValue {
   collectionRecipes: LocalCollection<CollectionRecipe>;
   likes: LocalCollection<UserLike>;
   comments: LocalCollection<Comment>;
+  chefFollows: LocalCollection<ChefFollow>;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -25,9 +26,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const collectionRecipes = useCollectionRecipes();
   const likes = useLikes();
   const comments = useComments();
+  const chefFollows = useChefFollows();
 
   return (
-    <AppContext.Provider value={{ chefs, recipes, components, ingredients, collections, collectionRecipes, likes, comments }}>
+    <AppContext.Provider value={{ chefs, recipes, components, ingredients, collections, collectionRecipes, likes, comments, chefFollows }}>
       {children}
     </AppContext.Provider>
   );
