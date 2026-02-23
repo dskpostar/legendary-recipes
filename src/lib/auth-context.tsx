@@ -11,6 +11,7 @@ interface AuthContextValue {
   signUp: (email: string, password: string, displayName: string) => Promise<void>;
   signOut: () => Promise<void>;
   signInWithGoogle: () => Promise<void>;
+  refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -148,6 +149,15 @@ export function AuthProviderComponent({ children }: { children: ReactNode }) {
     if (error) throw new Error(error.message);
   }, []);
 
+  const refreshProfile = useCallback(async () => {
+    if (!user) return;
+    const result = await fetchProfile(user.id);
+    if (result) {
+      setUser(result.user);
+      setIsAdmin(result.isAdmin);
+    }
+  }, [user]);
+
   const signOut = useCallback(async () => {
     // Immediately clear React state so UI updates right away
     setUser(null);
@@ -159,7 +169,7 @@ export function AuthProviderComponent({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, isAdmin, isAuthReady, isLoading, signIn, signUp, signOut, signInWithGoogle }}>
+    <AuthContext.Provider value={{ user, isAdmin, isAuthReady, isLoading, signIn, signUp, signOut, signInWithGoogle, refreshProfile }}>
       {children}
     </AuthContext.Provider>
   );

@@ -47,7 +47,7 @@ const PLANS: Plan[] = [
 const PLAN_RANK: Record<PlanId, number> = { free: 0, pro: 1, elite: 2 };
 
 export function MyPage() {
-  const { user, isAuthReady } = useAuth();
+  const { user, isAuthReady, refreshProfile } = useAuth();
   const { likes, comments, recipes, chefFollows, chefs } = useApp();
   const [upgradeToast, setUpgradeToast] = useState<string | null>(null);
   const [toastType, setToastType] = useState<'info' | 'success' | 'error'>('info');
@@ -64,6 +64,11 @@ export function MyPage() {
       showToast('Checkout cancelled. No charge was made.', 'info');
       setSearchParams({}, { replace: true });
     }
+  }, []);
+
+  // Re-fetch profile on mount to reflect plan changes made via Stripe portal
+  useEffect(() => {
+    refreshProfile();
   }, []);
 
   if (!isAuthReady) return null;
