@@ -15,55 +15,26 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-interface ProfileData {
-  profile: User | null;
-  isAdmin: boolean;
-}
-
-async function fetchOrCreateProfile(supabaseUser: { id: string; email?: string; user_metadata: Record<string, unknown> }): Promise<ProfileData> {
-  if (!supabase) return { profile: null, isAdmin: false };
-  const { data } = await supabase
+async function fetchProfile(userId: string): Promise<{ user: User; isAdmin: boolean } | null> {
+  if (!supabase) return null;
+  const { data, error } = await supabase
     .from('profiles')
     .select('*')
-    .eq('id', supabaseUser.id)
+    .eq('id', userId)
     .single();
 
-  if (data) {
-    return {
-      profile: {
-        id: data.id,
-        email: data.email,
-        display_name: data.display_name,
-        avatar_url: data.avatar_url ?? '',
-        created_at: data.created_at,
-      },
-      isAdmin: data.is_admin === true,
-    };
-  }
-
-  // First-time OAuth user: create profile from provider metadata
-  const email = supabaseUser.email ?? '';
-  const meta = supabaseUser.user_metadata;
-  const displayName = String(meta.full_name ?? meta.name ?? email.split('@')[0]);
-  const avatarUrl = String(meta.avatar_url ?? meta.picture ?? '');
-
-  const { data: newProfile } = await supabase
-    .from('profiles')
-    .insert({ id: supabaseUser.id, email, display_name: displayName, avatar_url: avatarUrl })
-    .select()
-    .single();
-
-  if (!newProfile) return { profile: null, isAdmin: false };
+  if (error || !data) return null;
 
   return {
-    profile: {
-      id: newProfile.id,
-      email: newProfile.email,
-      display_name: newProfile.display_name,
-      avatar_url: newProfile.avatar_url ?? '',
-      created_at: newProfile.created_at,
+    user: {
+      id: data.id,
+      email: data.email,
+      display_name: data.display_name,
+      avatar_url: data.avatar_url ?? '',
+      created_at: data.created_at,
+      membership_plan: (data.membership_plan ?? 'free') as 'free' | 'pro' | 'elite',
     },
-    isAdmin: false,
+    isAdmin: data.is_admin === true,
   };
 }
 
@@ -79,20 +50,35 @@ export function AuthProviderComponent({ children }: { children: ReactNode }) {
       return;
     }
 
-    // onAuthStateChange handles all auth events including OAuth callbacks
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (session?.user) {
-        const { profile, isAdmin: admin } = await fetchOrCreateProfile(session.user);
-        setUser(profile);
-        setIsAdmin(admin);
-      } else {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_OUT') {
         setUser(null);
         setIsAdmin(false);
+        setIsAuthReady(true);
+        return;
       }
+
+      if (session?.user) {
+        const result = await fetchProfile(session.user.id);
+        if (result) {
+          setUser(result.user);
+          setIsAdmin(result.isAdmin);
+        }
+        // If profile fetch fails, don't clear existing user — let them stay logged in
+      }
+
       setIsAuthReady(true);
     });
 
-    return () => subscription.unsubscribe();
+    // 10s safety timeout: if onAuthStateChange never fires, unblock the UI
+    const timer = setTimeout(() => {
+      setIsAuthReady(true);
+    }, 10000);
+
+    return () => {
+      clearTimeout(timer);
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signIn = useCallback(async (email: string, password: string) => {
@@ -101,11 +87,12 @@ export function AuthProviderComponent({ children }: { children: ReactNode }) {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw new Error(error.message);
-      // Explicitly fetch profile for fast UI update (onAuthStateChange also fires)
       if (data.user) {
-        const { profile, isAdmin: admin } = await fetchOrCreateProfile(data.user);
-        setUser(profile);
-        setIsAdmin(admin);
+        const result = await fetchProfile(data.user.id);
+        if (result) {
+          setUser(result.user);
+          setIsAdmin(result.isAdmin);
+        }
       }
     } finally {
       setIsLoading(false);

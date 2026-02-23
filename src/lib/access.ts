@@ -1,12 +1,19 @@
 import type { AccessLevel } from './types';
 
-const ACCESS_RANK: Record<AccessLevel, number> = {
-  free: 0,
-  pro: 1,
-  elite: 2,
-  bocuse: 3,
-};
-
-export function canAccess(userLevel: AccessLevel, requiredLevel: AccessLevel): boolean {
-  return ACCESS_RANK[userLevel] >= ACCESS_RANK[requiredLevel];
+export function canAccess(
+  userPlan: 'free' | 'pro' | 'elite' | null,
+  accessLevel: AccessLevel,
+): boolean {
+  if (accessLevel === 'free') return true;
+  if (!userPlan || userPlan === 'free') return false;
+  if (userPlan === 'pro') return accessLevel === 'pro';
+  // elite: free + pro + elite + bocuse
+  return true;
 }
+
+export const ACCESS_PLAN_LABEL: Record<AccessLevel, string> = {
+  free: '',
+  pro: 'Pro',
+  elite: 'Elite',
+  bocuse: "Bocuse d'Or",
+};

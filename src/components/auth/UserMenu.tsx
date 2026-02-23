@@ -49,7 +49,14 @@ export function UserMenu() {
       {showDropdown && (
         <div className="absolute right-0 mt-2 w-56 bg-navy border border-black/10 rounded-none shadow-lg overflow-hidden z-50">
           <div className="px-4 py-3 border-b border-black/10">
-            <p className="text-sm font-medium text-cream">{user.display_name}</p>
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-sm font-medium text-cream">{user.display_name}</p>
+              {user.membership_plan !== 'free' && (
+                <span className="text-[10px] font-bold uppercase tracking-widest bg-gold text-navy px-1.5 py-0.5 rounded-full">
+                  {user.membership_plan}
+                </span>
+              )}
+            </div>
             <p className="text-xs text-cream/40">{user.email}</p>
           </div>
           <div className="py-1">

@@ -33,7 +33,7 @@ export function CommentSection({ recipeId }: CommentSectionProps) {
         if (!data) return;
         const map: Record<string, User> = {};
         for (const p of data) {
-          map[p.id] = { id: p.id, email: p.email, display_name: p.display_name, avatar_url: p.avatar_url ?? '', created_at: p.created_at };
+          map[p.id] = { id: p.id, email: p.email, display_name: p.display_name, avatar_url: p.avatar_url ?? '', created_at: p.created_at, membership_plan: (p.membership_plan ?? 'free') as 'free' | 'pro' | 'elite' };
         }
         setProfilesMap(map);
       });

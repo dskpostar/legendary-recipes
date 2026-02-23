@@ -4,6 +4,8 @@ import { cuisineLabel, formatTime } from '../../lib/format';
 import { RecipeBadge } from './RecipeBadge';
 import { LikeButton } from './LikeButton';
 import { useApp } from '../../lib/context';
+import { useAuth } from '../../lib/auth-context';
+import { canAccess, ACCESS_PLAN_LABEL } from '../../lib/access';
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -12,7 +14,13 @@ interface RecipeCardProps {
 
 export function RecipeCard({ recipe, chef }: RecipeCardProps) {
   const { comments } = useApp();
+  const { user } = useAuth();
   const commentCount = comments.items.filter((c) => c.recipe_id === recipe.id).length;
+
+  const userPlan = user?.membership_plan ?? null;
+  const locked = !canAccess(userPlan, recipe.access_level);
+  const planLabel = ACCESS_PLAN_LABEL[recipe.access_level];
+
   return (
     <Link
       to={`/recipe/${recipe.id}`}
@@ -27,6 +35,12 @@ export function RecipeCard({ recipe, chef }: RecipeCardProps) {
         <div className="absolute top-3 left-3">
           <RecipeBadge tier={recipe.tier} />
         </div>
+        {locked && planLabel && (
+          <div className="absolute top-3 right-3 flex items-center gap-1 bg-black/60 text-gold text-xs font-semibold px-2 py-1 rounded">
+            <span>&#128274;</span>
+            <span>{planLabel}</span>
+          </div>
+        )}
       </div>
 
       <div className="p-4">

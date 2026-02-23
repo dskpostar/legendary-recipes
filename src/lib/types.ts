@@ -73,6 +73,7 @@ export interface User {
   display_name: string;
   avatar_url: string;
   created_at: string;
+  membership_plan: 'free' | 'pro' | 'elite';
 }
 
 export interface UserLike {
