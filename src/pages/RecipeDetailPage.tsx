@@ -6,6 +6,7 @@ import { canAccess, ACCESS_PLAN_LABEL } from '../lib/access';
 import { RecipeHero } from '../components/recipe/RecipeHero';
 import { RecipeMeta } from '../components/recipe/RecipeMeta';
 import { ComponentList } from '../components/recipe/ComponentList';
+import { RecipeProcedure } from '../components/recipe/RecipeProcedure';
 import { LikeButton } from '../components/recipe/LikeButton';
 import { CommentSection } from '../components/recipe/CommentSection';
 import { Button } from '../components/ui/Button';
@@ -77,6 +78,12 @@ export function RecipeDetailPage() {
                   Reset to {recipe.servings}
                 </button>
               )}
+            </section>
+
+            {/* Procedure */}
+            <section>
+              <h2 className="font-display text-2xl font-bold text-cream mb-6">Procedure</h2>
+              <RecipeProcedure components={recipeComponents} />
             </section>
 
             {/* Components */}

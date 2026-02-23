@@ -36,6 +36,7 @@ export interface RecipeComponent {
   recipe_id: string;
   name: string;
   image_url: string;
+  video_url: string;
   instructions: string;
   sort_order: number;
 }

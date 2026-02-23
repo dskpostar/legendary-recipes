@@ -275,44 +275,44 @@ export const SEED_RECIPES: Recipe[] = [
 // ===== Recipe Components =====
 export const SEED_COMPONENTS: RecipeComponent[] = [
   // Recipe 1: Forager's Wild Herb Salad
-  { id: 'comp-1-1', recipe_id: 'recipe-1', name: 'Wild Herb Salad', image_url: '', instructions: 'Gently wash and dry all foraged herbs. Arrange on chilled plates, mixing textures and colors. Reserve delicate flowers for garnish.', sort_order: 1 },
-  { id: 'comp-1-2', recipe_id: 'recipe-1', name: 'Fermented Plum Vinaigrette', image_url: '', instructions: 'Blend fermented plums until smooth. Whisk in rapeseed oil slowly to emulsify. Season with sea salt and a touch of honey. Strain through fine mesh.', sort_order: 2 },
+  { id: 'comp-1-1', recipe_id: 'recipe-1', name: 'Wild Herb Salad', image_url: '', video_url: '', instructions: 'Gently wash and dry all foraged herbs. Arrange on chilled plates, mixing textures and colors. Reserve delicate flowers for garnish.', sort_order: 1 },
+  { id: 'comp-1-2', recipe_id: 'recipe-1', name: 'Fermented Plum Vinaigrette', image_url: '', video_url: '', instructions: 'Blend fermented plums until smooth. Whisk in rapeseed oil slowly to emulsify. Season with sea salt and a touch of honey. Strain through fine mesh.', sort_order: 2 },
   // Recipe 2: Sea Urchin & Buttermilk
-  { id: 'comp-2-1', recipe_id: 'recipe-2', name: 'Buttermilk Snow', image_url: '', instructions: 'Combine buttermilk with gellan gum. Set in a shallow tray and freeze. Scrape with a fork to create snow texture.', sort_order: 1 },
-  { id: 'comp-2-2', recipe_id: 'recipe-2', name: 'Sea Urchin & Assembly', image_url: '', instructions: 'Clean sea urchin carefully. Place buttermilk snow in chilled bowls. Nestle sea urchin on top. Drizzle with dill oil and scatter crispy rye.', sort_order: 2 },
+  { id: 'comp-2-1', recipe_id: 'recipe-2', name: 'Buttermilk Snow', image_url: '', video_url: '', instructions: 'Combine buttermilk with gellan gum. Set in a shallow tray and freeze. Scrape with a fork to create snow texture.', sort_order: 1 },
+  { id: 'comp-2-2', recipe_id: 'recipe-2', name: 'Sea Urchin & Assembly', image_url: '', video_url: '', instructions: 'Clean sea urchin carefully. Place buttermilk snow in chilled bowls. Nestle sea urchin on top. Drizzle with dill oil and scatter crispy rye.', sort_order: 2 },
   // Recipe 3: Five Ages of Parmigiano
-  { id: 'comp-3-1', recipe_id: 'recipe-3', name: 'Parmigiano Foam (24-month)', image_url: '', instructions: 'Infuse cream with 24-month Parmigiano rinds. Strain, season, and charge in a siphon with 2 N2O cartridges.', sort_order: 1 },
-  { id: 'comp-3-2', recipe_id: 'recipe-3', name: 'Parmigiano Soufflé (36-month)', image_url: '', instructions: 'Prepare a classic soufflé base using béchamel and finely grated 36-month Parmigiano. Fold in whipped egg whites. Bake at 190°C for 12 minutes.', sort_order: 2 },
-  { id: 'comp-3-3', recipe_id: 'recipe-3', name: 'Parmigiano Crisp (50-month)', image_url: '', instructions: 'Grate 50-month Parmigiano finely. Spread in thin circles on silicone mat. Bake at 180°C until golden and crispy.', sort_order: 3 },
+  { id: 'comp-3-1', recipe_id: 'recipe-3', name: 'Parmigiano Foam (24-month)', image_url: '', video_url: '', instructions: 'Infuse cream with 24-month Parmigiano rinds. Strain, season, and charge in a siphon with 2 N2O cartridges.', sort_order: 1 },
+  { id: 'comp-3-2', recipe_id: 'recipe-3', name: 'Parmigiano Soufflé (36-month)', image_url: '', video_url: '', instructions: 'Prepare a classic soufflé base using béchamel and finely grated 36-month Parmigiano. Fold in whipped egg whites. Bake at 190°C for 12 minutes.', sort_order: 2 },
+  { id: 'comp-3-3', recipe_id: 'recipe-3', name: 'Parmigiano Crisp (50-month)', image_url: '', video_url: '', instructions: 'Grate 50-month Parmigiano finely. Spread in thin circles on silicone mat. Bake at 180°C until golden and crispy.', sort_order: 3 },
   // Recipe 4: Oops! Lemon Tart
-  { id: 'comp-4-1', recipe_id: 'recipe-4', name: 'Lemon Curd', image_url: '', instructions: 'Whisk eggs, sugar, and lemon juice over bain-marie until thick. Remove from heat and whisk in cold butter pieces until glossy.', sort_order: 1 },
-  { id: 'comp-4-2', recipe_id: 'recipe-4', name: 'Shortcrust Crumble', image_url: '', instructions: 'Make a classic pâte sucrée. Instead of lining a tart tin, crumble randomly onto a baking sheet. Bake until golden.', sort_order: 2 },
-  { id: 'comp-4-3', recipe_id: 'recipe-4', name: 'Meringue Shards', image_url: '', instructions: 'Whip egg whites and sugar to stiff peaks. Spread thin on parchment and dry in oven at 90°C for 2 hours. Break into shards.', sort_order: 3 },
+  { id: 'comp-4-1', recipe_id: 'recipe-4', name: 'Lemon Curd', image_url: '', video_url: '', instructions: 'Whisk eggs, sugar, and lemon juice over bain-marie until thick. Remove from heat and whisk in cold butter pieces until glossy.', sort_order: 1 },
+  { id: 'comp-4-2', recipe_id: 'recipe-4', name: 'Shortcrust Crumble', image_url: '', video_url: '', instructions: 'Make a classic pâte sucrée. Instead of lining a tart tin, crumble randomly onto a baking sheet. Bake until golden.', sort_order: 2 },
+  { id: 'comp-4-3', recipe_id: 'recipe-4', name: 'Meringue Shards', image_url: '', video_url: '', instructions: 'Whip egg whites and sugar to stiff peaks. Spread thin on parchment and dry in oven at 90°C for 2 hours. Break into shards.', sort_order: 3 },
   // Recipe 5: Walking on Ocean Floor
-  { id: 'comp-5-1', recipe_id: 'recipe-5', name: 'Abalone Preparation', image_url: '', instructions: 'Tenderize abalone and slow-cook sous vide at 62°C for 4 hours. Slice thinly and sear briefly before serving.', sort_order: 1 },
-  { id: 'comp-5-2', recipe_id: 'recipe-5', name: 'Ocean Broth', image_url: '', instructions: 'Simmer kelp, bonito, and coastal herbs for a clear, intensely oceanic broth. Strain and season with yuzu.', sort_order: 2 },
+  { id: 'comp-5-1', recipe_id: 'recipe-5', name: 'Abalone Preparation', image_url: '', video_url: '', instructions: 'Tenderize abalone and slow-cook sous vide at 62°C for 4 hours. Slice thinly and sear briefly before serving.', sort_order: 1 },
+  { id: 'comp-5-2', recipe_id: 'recipe-5', name: 'Ocean Broth', image_url: '', video_url: '', instructions: 'Simmer kelp, bonito, and coastal herbs for a clear, intensely oceanic broth. Strain and season with yuzu.', sort_order: 2 },
   // Recipe 6: Brioche Feuilletée
-  { id: 'comp-6-1', recipe_id: 'recipe-6', name: 'Brioche Dough', image_url: '', instructions: 'Combine flour, eggs, sugar, yeast, and salt. Knead until smooth. Incorporate softened butter gradually. Rest overnight in refrigerator.', sort_order: 1 },
-  { id: 'comp-6-2', recipe_id: 'recipe-6', name: 'Lamination', image_url: '', instructions: 'Roll out dough and enclose a butter block. Perform 3 single folds with 30-minute rests between each. Shape and proof for 2 hours. Bake at 175°C.', sort_order: 2 },
+  { id: 'comp-6-1', recipe_id: 'recipe-6', name: 'Brioche Dough', image_url: '', video_url: '', instructions: 'Combine flour, eggs, sugar, yeast, and salt. Knead until smooth. Incorporate softened butter gradually. Rest overnight in refrigerator.', sort_order: 1 },
+  { id: 'comp-6-2', recipe_id: 'recipe-6', name: 'Lamination', image_url: '', video_url: '', instructions: 'Roll out dough and enclose a butter block. Perform 3 single folds with 30-minute rests between each. Shape and proof for 2 hours. Bake at 175°C.', sort_order: 2 },
   // Recipe 7: Soil of the Forest
-  { id: 'comp-7-1', recipe_id: 'recipe-7', name: 'Burdock in Soil', image_url: '', instructions: 'Wrap burdock root in sanitized charcoal-rich soil. Slow-roast at 160°C for 3 hours. The soil imparts an earthy mineral quality.', sort_order: 1 },
-  { id: 'comp-7-2', recipe_id: 'recipe-7', name: 'Forest Floor Assembly', image_url: '', instructions: 'Create an edible soil from dehydrated mushrooms, rye bread, and miso. Plate the burdock and cover with edible soil. Garnish with micro herbs.', sort_order: 2 },
+  { id: 'comp-7-1', recipe_id: 'recipe-7', name: 'Burdock in Soil', image_url: '', video_url: '', instructions: 'Wrap burdock root in sanitized charcoal-rich soil. Slow-roast at 160°C for 3 hours. The soil imparts an earthy mineral quality.', sort_order: 1 },
+  { id: 'comp-7-2', recipe_id: 'recipe-7', name: 'Forest Floor Assembly', image_url: '', video_url: '', instructions: 'Create an edible soil from dehydrated mushrooms, rye bread, and miso. Plate the burdock and cover with edible soil. Garnish with micro herbs.', sort_order: 2 },
   // Recipe 8: Sakura Masu
-  { id: 'comp-8-1', recipe_id: 'recipe-8', name: 'Cured Sakura Masu', image_url: '', instructions: 'Cure the trout with salt, sugar, and preserved cherry blossom leaves for 24 hours. Rinse and slice thinly.', sort_order: 1 },
-  { id: 'comp-8-2', recipe_id: 'recipe-8', name: 'Cherry Blossom Gel & Garnish', image_url: '', instructions: 'Make a gel from cherry blossom tea with agar. Set, dice, and arrange with yuzu zest and mountain herbs over the cured fish.', sort_order: 2 },
+  { id: 'comp-8-1', recipe_id: 'recipe-8', name: 'Cured Sakura Masu', image_url: '', video_url: '', instructions: 'Cure the trout with salt, sugar, and preserved cherry blossom leaves for 24 hours. Rinse and slice thinly.', sort_order: 1 },
+  { id: 'comp-8-2', recipe_id: 'recipe-8', name: 'Cherry Blossom Gel & Garnish', image_url: '', video_url: '', instructions: 'Make a gel from cherry blossom tea with agar. Set, dice, and arrange with yuzu zest and mountain herbs over the cured fish.', sort_order: 2 },
   // Recipe 9: Edible Stones
-  { id: 'comp-9-1', recipe_id: 'recipe-9', name: 'Potato Stones', image_url: '', instructions: 'Boil small potatoes until just tender. Cool completely. Coat with a mixture of kaolin clay and olive oil to create a stone-like exterior.', sort_order: 1 },
-  { id: 'comp-9-2', recipe_id: 'recipe-9', name: 'Dipping Sauce', image_url: '', instructions: 'Blend roasted peppers, smoked paprika, garlic, and olive oil. Season with sherry vinegar and serve alongside the stones.', sort_order: 2 },
+  { id: 'comp-9-1', recipe_id: 'recipe-9', name: 'Potato Stones', image_url: '', video_url: '', instructions: 'Boil small potatoes until just tender. Cool completely. Coat with a mixture of kaolin clay and olive oil to create a stone-like exterior.', sort_order: 1 },
+  { id: 'comp-9-2', recipe_id: 'recipe-9', name: 'Dipping Sauce', image_url: '', video_url: '', instructions: 'Blend roasted peppers, smoked paprika, garlic, and olive oil. Season with sherry vinegar and serve alongside the stones.', sort_order: 2 },
   // Recipe 10: Burnt Onion Ash Broth
-  { id: 'comp-10-1', recipe_id: 'recipe-10', name: 'Charred Onion Broth', image_url: '', instructions: 'Halve onions and char cut-side down until completely black. Simmer in water for 3 hours. Strain through cheesecloth for a clear, smoky broth.', sort_order: 1 },
-  { id: 'comp-10-2', recipe_id: 'recipe-10', name: 'Mushroom Custard', image_url: '', instructions: 'Infuse cream with dried porcini for 1 hour. Strain, combine with eggs. Pour into molds and steam at 85°C for 20 minutes.', sort_order: 2 },
+  { id: 'comp-10-1', recipe_id: 'recipe-10', name: 'Charred Onion Broth', image_url: '', video_url: '', instructions: 'Halve onions and char cut-side down until completely black. Simmer in water for 3 hours. Strain through cheesecloth for a clear, smoky broth.', sort_order: 1 },
+  { id: 'comp-10-2', recipe_id: 'recipe-10', name: 'Mushroom Custard', image_url: '', video_url: '', instructions: 'Infuse cream with dried porcini for 1 hour. Strain, combine with eggs. Pour into molds and steam at 85°C for 20 minutes.', sort_order: 2 },
   // Recipe 11: Tortellini in Brodo
-  { id: 'comp-11-1', recipe_id: 'recipe-11', name: 'Fresh Pasta Dough', image_url: '', instructions: 'Combine 00 flour and eggs. Knead for 10 minutes until silky smooth. Rest wrapped for 30 minutes.', sort_order: 1 },
-  { id: 'comp-11-2', recipe_id: 'recipe-11', name: 'Filling & Assembly', image_url: '', instructions: 'Mix ground pork, prosciutto, mortadella, and Parmigiano. Roll pasta thin, cut squares, fill and fold into tortellini shape.', sort_order: 2 },
-  { id: 'comp-11-3', recipe_id: 'recipe-11', name: 'Capon Broth', image_url: '', instructions: 'Simmer capon with celery, carrot, and onion for 4 hours. Skim regularly. Strain and season. Cook tortellini directly in the broth.', sort_order: 3 },
+  { id: 'comp-11-1', recipe_id: 'recipe-11', name: 'Fresh Pasta Dough', image_url: '', video_url: '', instructions: 'Combine 00 flour and eggs. Knead for 10 minutes until silky smooth. Rest wrapped for 30 minutes.', sort_order: 1 },
+  { id: 'comp-11-2', recipe_id: 'recipe-11', name: 'Filling & Assembly', image_url: '', video_url: '', instructions: 'Mix ground pork, prosciutto, mortadella, and Parmigiano. Roll pasta thin, cut squares, fill and fold into tortellini shape.', sort_order: 2 },
+  { id: 'comp-11-3', recipe_id: 'recipe-11', name: 'Capon Broth', image_url: '', video_url: '', instructions: 'Simmer capon with celery, carrot, and onion for 4 hours. Skim regularly. Strain and season. Cook tortellini directly in the broth.', sort_order: 3 },
   // Recipe 12: Fermented Mushroom Garum
-  { id: 'comp-12-1', recipe_id: 'recipe-12', name: 'Mushroom Preparation', image_url: '', instructions: 'Combine mixed wild mushrooms with barley koji and 15% salt by weight. Pack tightly into fermentation vessel.', sort_order: 1 },
-  { id: 'comp-12-2', recipe_id: 'recipe-12', name: 'Fermentation & Pressing', image_url: '', instructions: 'Ferment at 28°C for 90 days, stirring weekly. Strain through cheesecloth, pressing to extract all liquid. Pasteurize at 80°C and bottle.', sort_order: 2 },
+  { id: 'comp-12-1', recipe_id: 'recipe-12', name: 'Mushroom Preparation', image_url: '', video_url: '', instructions: 'Combine mixed wild mushrooms with barley koji and 15% salt by weight. Pack tightly into fermentation vessel.', sort_order: 1 },
+  { id: 'comp-12-2', recipe_id: 'recipe-12', name: 'Fermentation & Pressing', image_url: '', video_url: '', instructions: 'Ferment at 28°C for 90 days, stirring weekly. Strain through cheesecloth, pressing to extract all liquid. Pasteurize at 80°C and bottle.', sort_order: 2 },
 ];
 
 // ===== Ingredients =====
