@@ -83,6 +83,8 @@ export function AuthProviderComponent({ children }: { children: ReactNode }) {
 
   const signIn = useCallback(async (email: string, password: string) => {
     if (!supabase) throw new Error('Supabase is not configured');
+    // Block admin/protected pages while sign-in is in progress
+    setIsAuthReady(false);
     setIsLoading(true);
     try {
       // Drain any pending lock (e.g. signOut still in flight) before attempting sign-in
@@ -94,10 +96,11 @@ export function AuthProviderComponent({ children }: { children: ReactNode }) {
         if (result) {
           setUser(result.user);
           setIsAdmin(result.isAdmin);
-          setIsAuthReady(true);
         }
       }
     } finally {
+      // Always unblock UI when signIn completes (success or failure)
+      setIsAuthReady(true);
       setIsLoading(false);
     }
   }, []);
