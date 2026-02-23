@@ -85,6 +85,8 @@ export function AuthProviderComponent({ children }: { children: ReactNode }) {
     if (!supabase) throw new Error('Supabase is not configured');
     setIsLoading(true);
     try {
+      // Drain any pending lock (e.g. signOut still in flight) before attempting sign-in
+      await supabase.auth.getSession();
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw new Error(error.message);
       if (data.user) {
