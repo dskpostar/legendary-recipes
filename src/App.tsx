@@ -22,6 +22,7 @@ import { ChefsAdmin } from './pages/admin/ChefsAdmin';
 import { CollectionsAdmin } from './pages/admin/CollectionsAdmin';
 import { CommentsAdmin } from './pages/admin/CommentsAdmin';
 import { UsersAdmin } from './pages/admin/UsersAdmin';
+import { LikesRankingAdmin } from './pages/admin/LikesRankingAdmin';
 
 export default function App() {
   return (
@@ -46,6 +47,7 @@ export default function App() {
               <Route path="collections" element={<CollectionsAdmin />} />
               <Route path="comments" element={<CommentsAdmin />} />
               <Route path="users" element={<UsersAdmin />} />
+              <Route path="likes-ranking" element={<LikesRankingAdmin />} />
             </Route>
           </Routes>
         </AppProvider>

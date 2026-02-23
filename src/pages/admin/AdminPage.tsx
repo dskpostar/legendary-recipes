@@ -7,6 +7,7 @@ const ADMIN_LINKS = [
   { to: '/admin/collections', label: 'Collections' },
   { to: '/admin/comments', label: 'Comments' },
   { to: '/admin/users', label: 'Users' },
+  { to: '/admin/likes-ranking', label: '♥ Likes Ranking' },
 ];
 
 export function AdminPage() {
