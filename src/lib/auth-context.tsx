@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useRef, type ReactNode } from 'react';
 import type { User } from './types';
 import { supabase, isSupabaseConfigured } from './supabase';
 
@@ -43,6 +43,8 @@ export function AuthProviderComponent({ children }: { children: ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isAuthReady, setIsAuthReady] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  // Prevents onAuthStateChange from overwriting isAuthReady while signIn is in flight
+  const signingInRef = useRef(false);
 
   useEffect(() => {
     if (!isSupabaseConfigured || !supabase) {
@@ -67,7 +69,10 @@ export function AuthProviderComponent({ children }: { children: ReactNode }) {
         // If profile fetch fails, don't clear existing user — let them stay logged in
       }
 
-      setIsAuthReady(true);
+      // Don't set isAuthReady while signIn is managing it
+      if (!signingInRef.current) {
+        setIsAuthReady(true);
+      }
     });
 
     // 10s safety timeout: if onAuthStateChange never fires, unblock the UI
@@ -83,7 +88,7 @@ export function AuthProviderComponent({ children }: { children: ReactNode }) {
 
   const signIn = useCallback(async (email: string, password: string) => {
     if (!supabase) throw new Error('Supabase is not configured');
-    // Block admin/protected pages while sign-in is in progress
+    signingInRef.current = true;
     setIsAuthReady(false);
     setIsLoading(true);
     try {
@@ -99,6 +104,7 @@ export function AuthProviderComponent({ children }: { children: ReactNode }) {
         }
       }
     } finally {
+      signingInRef.current = false;
       // Always unblock UI when signIn completes (success or failure)
       setIsAuthReady(true);
       setIsLoading(false);
