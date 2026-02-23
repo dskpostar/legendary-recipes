@@ -94,6 +94,7 @@ export function AuthProviderComponent({ children }: { children: ReactNode }) {
         if (result) {
           setUser(result.user);
           setIsAdmin(result.isAdmin);
+          setIsAuthReady(true);
         }
       }
     } finally {
