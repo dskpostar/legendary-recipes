@@ -30,6 +30,7 @@ const EMPTY_COMPONENT: Omit<RecipeComponent, 'id'> = {
   recipe_id: '',
   name: '',
   image_url: '',
+  video_url: '',
   instructions: '',
   sort_order: 0,
 };
