@@ -43,7 +43,7 @@ export function AuthProviderComponent({ children }: { children: ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isAuthReady, setIsAuthReady] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  // Prevents onAuthStateChange from overwriting isAuthReady while signIn is in flight
+  // Prevents onAuthStateChange from overwriting state while signIn is in flight
   const signingInRef = useRef(false);
 
   useEffect(() => {
@@ -52,7 +52,12 @@ export function AuthProviderComponent({ children }: { children: ReactNode }) {
       return;
     }
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      // IMPORTANT: keep this callback synchronous.
+      // The Supabase SDK holds an internal navigator.locks lock while calling this callback.
+      // Any async Supabase call inside here (like fetchProfile) would try to acquire the
+      // same lock → deadlock. Defer async work via setTimeout so it runs after lock release.
+
       if (event === 'SIGNED_OUT') {
         setUser(null);
         setIsAdmin(false);
@@ -60,17 +65,18 @@ export function AuthProviderComponent({ children }: { children: ReactNode }) {
         return;
       }
 
-      if (session?.user) {
-        const result = await fetchProfile(session.user.id);
-        if (result) {
-          setUser(result.user);
-          setIsAdmin(result.isAdmin);
-        }
-        // If profile fetch fails, don't clear existing user — let them stay logged in
-      }
-
-      // Don't set isAuthReady while signIn is managing it
-      if (!signingInRef.current) {
+      if (session?.user && !signingInRef.current) {
+        const userId = session.user.id;
+        // Defer to next tick so SDK lock is released before we call fetchProfile
+        setTimeout(async () => {
+          const result = await fetchProfile(userId);
+          if (result) {
+            setUser(result.user);
+            setIsAdmin(result.isAdmin);
+          }
+          setIsAuthReady(true);
+        }, 0);
+      } else if (!signingInRef.current) {
         setIsAuthReady(true);
       }
     });
