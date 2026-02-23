@@ -84,12 +84,6 @@ export function AuthProviderComponent({ children }: { children: ReactNode }) {
   const signIn = useCallback(async (email: string, password: string) => {
     if (!supabase) throw new Error('Supabase is not configured');
     setIsLoading(true);
-    // Clear stale sb-* keys so navigator.locks never gets stuck
-    try {
-      for (const key of Object.keys(localStorage)) {
-        if (key.startsWith('sb-')) localStorage.removeItem(key);
-      }
-    } catch { /* ignore */ }
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw new Error(error.message);
@@ -140,14 +134,10 @@ export function AuthProviderComponent({ children }: { children: ReactNode }) {
     // Immediately clear React state so UI updates right away
     setUser(null);
     setIsAdmin(false);
-    // Clear all sb-* localStorage keys to prevent stale lock state on next sign-in
+    // Let the SDK clean up properly — scope: 'local' clears storage without a network request
     try {
-      for (const key of Object.keys(localStorage)) {
-        if (key.startsWith('sb-')) localStorage.removeItem(key);
-      }
+      if (supabase) await supabase.auth.signOut({ scope: 'local' });
     } catch { /* ignore */ }
-    // Notify server (best-effort, fire and forget)
-    supabase?.auth.signOut({ scope: 'local' }).catch(() => {});
   }, []);
 
   return (

@@ -28,7 +28,7 @@ try {
 // Custom fetch with 10-second timeout to prevent hanging requests
 const fetchWithTimeout: typeof fetch = (input, init) => {
   const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), 10000);
+  const id = setTimeout(() => controller.abort(), 5000);
   return fetch(input, { ...init, signal: controller.signal }).finally(() => clearTimeout(id));
 };
 
