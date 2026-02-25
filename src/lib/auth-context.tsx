@@ -67,10 +67,28 @@ export function AuthProviderComponent({ children }: { children: ReactNode }) {
       }
 
       if (session?.user && !signingInRef.current) {
-        const userId = session.user.id;
+        const sessionUser = session.user;
         // Defer to next tick so SDK lock is released before we call fetchProfile
         setTimeout(async () => {
-          const result = await fetchProfile(userId);
+          let result = await fetchProfile(sessionUser.id);
+          if (!result && supabase) {
+            // OAuth users (e.g. Google) have no profiles row yet — auto-create it
+            const meta = sessionUser.user_metadata ?? {};
+            const displayName =
+              meta.full_name ?? meta.name ?? sessionUser.email?.split('@')[0] ?? 'User';
+            const avatarUrl = meta.avatar_url ?? meta.picture ?? '';
+            await supabase.from('profiles').upsert(
+              {
+                id: sessionUser.id,
+                email: sessionUser.email ?? '',
+                display_name: displayName,
+                avatar_url: avatarUrl,
+                membership_plan: 'free',
+              },
+              { onConflict: 'id', ignoreDuplicates: true }
+            );
+            result = await fetchProfile(sessionUser.id);
+          }
           if (result) {
             setUser(result.user);
             setIsAdmin(result.isAdmin);
